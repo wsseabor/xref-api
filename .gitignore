@@ -1,0 +1,11 @@
+__pycache__
+.DS_Store
+venv/
+.env
+env.list
+redis*/
+/venv
+/migrations
+dist/
+*.csv
+test.py
