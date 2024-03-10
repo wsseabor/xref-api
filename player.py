@@ -11,9 +11,10 @@ player name like James Harden would shorted to hardeja1), csv output file name i
 class NbaPlayerStats:
 
     #Init method
-    def __init__(self, player, csv_file_name = None):
+    def __init__(self, player, csv_file_name = None, json_option = None):
         self.player = player
         self.csv_file_name = csv_file_name
+        self.json_option = json_option
 
     """
     Initially wanted to use the dunder call method, but that didn't end up working too well.
@@ -52,7 +53,7 @@ class NbaPlayerStats:
         player_column_headers = [th.get_text(strip = True) for th in column_table.find_all('tr', limit = 1)[0].find_all('th')]
 
         #For testing
-        #print(player_column_headers)
+        print(player_column_headers)
 
         return player_column_headers
     
