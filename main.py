@@ -21,3 +21,17 @@ if __name__ == "__main__":
         query_string = parse_player_formatted_name(last, first)
         last_five = PlayerLastFive(query_string, None, None)
         last_five.run()
+
+
+    """
+    CLI with sys.arg, clean up later
+    
+    """
+
+    """
+    if __name__ == "__main__":
+        q_string = parse_player_formatteda_name(sys.argv[1], sys.argv[2])
+        last_five = PlayerLastFive(q_string, None, None)
+        last_five.run()
+    
+    """
