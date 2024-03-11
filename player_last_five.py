@@ -8,7 +8,7 @@ NBA player class
 Takes player name (Modified in utility file for basketball reference's query params, 
 player name like James Harden would shorted to hardeja1), csv output file name if specified
 """
-class NbaPlayerStats:
+class PlayerLastFive:
 
     #Init method
     def __init__(self, player, csv_file_name = None, json_option = None):
@@ -53,7 +53,7 @@ class NbaPlayerStats:
         player_column_headers = [th.get_text(strip = True) for th in column_table.find_all('tr', limit = 1)[0].find_all('th')]
 
         #For testing
-        print(player_column_headers)
+        #print(player_column_headers)
 
         return player_column_headers
     
@@ -74,7 +74,10 @@ class NbaPlayerStats:
         #Test print
         #print([td.get_text(strip = True) for td in stats])
 
-        return [td.get_text(strip = True) for td in stats][27:]
+        #Hardcododed 27 due to length of headers - needed in zipping up to list of dicts
+        stat_rows = [td.get_text(strip = True) for td in stats][27:]
+
+        return stat_rows
     
 
     """
@@ -88,6 +91,3 @@ class NbaPlayerStats:
         out += [dict(zip(key_list, value_list[i: i + len(key_list)])) for i in range(0, len(value_list), len(key_list))]
 
         return out
-
-stats = NbaPlayerStats("wembavi01")
-stats.run()
