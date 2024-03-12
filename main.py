@@ -1,5 +1,5 @@
 from utility.utility import parse_player_formatted_name
-from player_last_five import PlayerLastFive
+from player_last_five import PlayerLastFiveStats
 
 """
 Simple CLI interface - to change later
@@ -19,7 +19,7 @@ if __name__ == "__main__":
         first = input()
 
         query_string = parse_player_formatted_name(last, first)
-        last_five = PlayerLastFive(query_string, None, None)
+        last_five = PlayerLastFiveStats(query_string, None, None)
         last_five.run()
 
 
