@@ -9,3 +9,4 @@ redis*/
 dist/
 *.csv
 test.py
+notes.py

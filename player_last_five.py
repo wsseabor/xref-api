@@ -1,51 +1,42 @@
 import requests
 from bs4 import BeautifulSoup
-
+from base_stats_class.base_player_stat_class import BaseStatsClass
 
 """
-NBA player class
+NBA player's last five scraped stats class
 
-Takes player name (Modified in utility file for basketball reference's query params, 
-player name like James Harden would shorted to hardeja1), csv output file name if specified
+Refactored to an abstract class, each table from the player's home page on basketball reference
+(eg. https://www.basketball-reference.com/players/w/wembavi01.html for Victor Wembanyama will have
+the same methods reused for each table, being last five, per 36, per 100 possesions...
+
+Takes player name, modifies name for query string (in utility.py), stats come out.)
 """
-class PlayerLastFive:
 
-    #Init method
-    def __init__(self, player, csv_file_name = None, json_option = None):
-        self.player = player
-        self.csv_file_name = csv_file_name
-        self.json_option = json_option
+class PlayerLastFiveStats(BaseStatsClass):
+
+    def __init__(self, player_name) -> None:
+        self.player_name = player_name
 
     """
-    Initially wanted to use the dunder call method, but that didn't end up working too well.
-    Unsure why - will research later.
-
-    Also the repeated function calls should probably be cleaned up. But I did get to use
-    the walrus operator, which should take precedence over best practices
-
-    Run method scrapes all relevant class data, packages it to list of dictionaries, 
-    outputs to specified file type.
-
-    TO DO:
-        Add json 
+    Returns none, for now. Useful for debugging. Runs all methods in class
+    and returns a stat profile for the given player
     """
-    def run(self):
+    def run(self) -> None:
         print(" --->  Scraping columns headers...")
-        (x := self.get_player_column_header())
+        (x := self.get_player_column_headers())
 
         print(" ---> Scraping player data...")
         (y := self.get_player_row_data())
 
         print(" ---> Zipping stats...")
         print(self.parse_player_stats(x, y))
-        
-    """
-    Method gets column headers per player
 
-    Returns list of column headers
+
     """
-    def get_player_column_header(self):
-        html = requests.get(f"https://www.basketball-reference.com/players/w/{self.player}.html")
+    Returns a list of column headers for the given player's stat profile
+    """
+    def get_player_column_headers(self) -> list:
+        html = requests.get(f"https://www.basketball-reference.com/players/{self.player_name[0]}/{self.player_name}01.html")
         soup = BeautifulSoup(html.text, 'html.parser')
 
         column_table = soup.find('table', id = 'last5')
@@ -59,15 +50,13 @@ class PlayerLastFive:
     
 
     """
-    Gets player row data
-
-    Returns list of row data for last five games
+    Returns a list of stat rows for the given player's stat profile (Points, rebounds, assists, etc)
     """
     def get_player_row_data(self):
-        html = requests.get(f"https://www.basketball-reference.com/players/w/{self.player}.html")
+        html = requests.get(f"https://www.basketball-reference.com/players/{self.player_name[0]}/{self.player_name}01.html")
         soup = BeautifulSoup(html.text, 'html.parser')
 
-        page = soup.find('table', id = 'last5')
+        page = soup.find('table', class_ = 'sortable stats_table')
 
         stats = page.find_all(['th', 'td'], attrs= { 'data-stat' : any})
 
@@ -81,13 +70,16 @@ class PlayerLastFive:
     
 
     """
-    Returns list of dictionaries
-
-    Each dict represents one of the last five games played
+    Returns a list of dictionaries that contain each of the player's stats of last five games
     """
-    def parse_player_stats(self, key_list, value_list):
+    def parse_player_stats(self, key_list, value_list) -> list:
         out = []
 
         out += [dict(zip(key_list, value_list[i: i + len(key_list)])) for i in range(0, len(value_list), len(key_list))]
 
         return out
+    
+
+#Test
+stats = PlayerLastFiveStats("wembavi")
+stats.run()
