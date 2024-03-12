@@ -1,11 +1,12 @@
 import csv
-from data import player_last_five_fields
+from data.data import player_last_five_fields
 
 def parse_player_formatted_name(last_name, first_name):
     last = last_name[:5]
     first = first_name[:2]
     formatted_query_name = f"{last}{first}01"
     query_name = formatted_query_name.lower()
+    print(query_name)
     return query_name
 
 def output(values, output_type, output_file_path, output_write_option, csv_writer):
@@ -29,3 +30,4 @@ def player_last_five_to_csv(rows, output_file_path, output_write_option):
             rows
         )
 
+parse_player_formatted_name("Harden", "James")

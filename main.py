@@ -1,4 +1,4 @@
-from utility import parse_player_formatted_name
+from utility.utility import parse_player_formatted_name
 from player_last_five import PlayerLastFive
 
 """
