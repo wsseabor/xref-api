@@ -26,3 +26,30 @@ class BaseStatsClass(ABC):
     @abstractmethod
     def parse_player_stats(self) -> list:
         pass
+
+"""
+Abstract class to scrape and parse player data, with selenium as basketball reference
+now only loads dynamic data
+
+Methods extract desired column header, row data, parses them and zips in one list of 
+dictionaries, cleans data with pandas
+
+"""
+
+class BasePlayerStats(ABC):
+
+    @abstractmethod
+    def get_player_column_headers(self) -> list:
+        pass
+
+    @abstractmethod
+    def get_player_row_stats(self) -> list:
+        pass
+
+    @abstractmethod
+    def parse_player_stats(self) -> list:
+        pass
+
+    @abstractmethod
+    def clean_player_stats(self, player_data_frame) -> None:
+        pass
