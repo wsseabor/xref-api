@@ -5,56 +5,61 @@ from selenium.common.exceptions import TimeoutException
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as ec
 from selenium.webdriver.support.wait import WebDriverWait
+from selenium.webdriver.chrome.options import Options
 
-DRIVER = "/usr/local/bin/chromedriver"
+#Deprecated?
+#DRIVER = "/usr/local/bin/chromedriver"
 
+"""
+Inherits from base player stat class
+"""
 class PlayerPerGameStats(BasePlayerStats):
     
     def __init__(self, player_name):
         self.player_name = player_name
 
+    """
+    Performs similar to a runtime script when class is called
+    """
     def __call__(self):
         print("Scraping per game data...")
         self.get_player_column_headers()
 
         print("Scrape ok...")
 
+    """
+    Returns list of column headers in specified table
+    """
     def get_player_column_headers(self) -> list:
-        browser = webdriver.Chrome(DRIVER)
-        url = "https://www.basketball-reference.com/players/{self.player_name[0]}/{self.player_name}01.html"
 
-        delay = 5
+        """
+        Selenium webdriver boilerplate
 
-        while True:
-            try:
-                browser.set_page_load_timeout(20)
-                while True:
-                    try:
-                        browser.get(url)
-                    except TimeoutException:
-                        print("Timed out, retrying...")
-                    else:
-                        break
+        Has to use headless mode to work
 
-                WebDriverWait(browser, delay).until(ec.presence_of_element_located((By.ID, "per_game")))
-            except TimeoutException:
-                browser.quit()
-                continue
-            break
+        Experimental options - do not load images
+        """
+        options = Options()
+        options.add_argument("--headless=new")
+        options.add_experimental_option(
+            "prefs", {
+                "profile.managed_default_content_settings.images" : 2,
+            }
+        )
 
-        browser.maximize_window()
+        browser = webdriver.Chrome(options=options)
+        url = "https://www.basketball-reference.com/players/w/wembavi01.html"
+        browser.get(url)
 
-        table = browser.find_element(By.ID, "per_game")
-        head = table.find_element(By.TAG_NAME, "thead")
-
-        head_row = head.find_element(By.TAG_NAME, "tr")[1]
-
-        player_column_headers = [header.text.encode("utf8") for header in head_row.find_element((By.TAG_NAME, "th"))]
-        player_column_headers = player_column_headers[1:]
-
-        browser.quit()
-
-        print(player_column_headers)
+        try:
+            table = browser.find_element(By.ID, 'per_game')
+            headers = table.find_elements(By.XPATH, './thead/tr')
+            column_headers = [header.text for header in headers[0].find_elements(By.TAG_NAME, 'th')]
+            print(column_headers)
+            browser.quit()
+            
+        except TimeoutException:
+            pass
 
     def get_player_row_stats(self) -> list:
         pass
@@ -67,3 +72,4 @@ class PlayerPerGameStats(BasePlayerStats):
 
 
 stats = PlayerPerGameStats("wembavi")
+stats()
