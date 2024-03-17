@@ -72,8 +72,10 @@ class PlayerPerGameStats(BasePlayerStats):
 
         try:
             table = self.browser.find_element(By.ID, 'per_game')
-            rows = table.find_elements(By.XPATH, './tbody/tr/td')
+            rows = table.find_elements(By.XPATH, './tbody/tr')
             player_data = [row.text for row in rows]
+
+            return player_data
 
         except TimeoutException:
             self.browser.quit()
