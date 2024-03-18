@@ -28,12 +28,14 @@ class PlayerPerGameStats(BasePlayerStats):
     """
     def __call__(self):
         print("Scraping per game column data...")
-        self.get_player_column_headers()
+        (columns := self.get_player_column_headers())
 
         print("Scraping per game row data...")
-        self.get_player_row_stats()
+        (rows := self.get_player_row_stats())
 
-        print("Scrape ok...")
+        print("Scrape ok...\n")
+        print("Parsing data...")
+        self.parse_player_stats(columns, rows)
 
     """
     Returns list of column headers in specified table
@@ -48,7 +50,7 @@ class PlayerPerGameStats(BasePlayerStats):
         Experimental options - do not load images
         """
 
-        url = "https://www.basketball-reference.com/players/w/wembavi01.html"
+        url = "https://www.basketball-reference.com/players/l/lillada01.html"
         self.browser.get(url)
 
         try:
@@ -67,13 +69,15 @@ class PlayerPerGameStats(BasePlayerStats):
         Selenium webdriver boilerplate
         """
 
-        url = "https://www.basketball-reference.com/players/w/wembavi01.html"
+        url = "https://www.basketball-reference.com/players/l/lillada01.html"
         self.browser.get(url)
 
         try:
             table = self.browser.find_element(By.ID, 'per_game')
             rows = table.find_elements(By.XPATH, './tbody/tr')
-            player_data = [row.text for row in rows]
+
+            #31 rows in player per game data, needed to parse list to zip to list of dicts
+            player_data = [row.text for row in rows][:31]
 
             return player_data
 
@@ -81,12 +85,20 @@ class PlayerPerGameStats(BasePlayerStats):
             self.browser.quit()
         
 
-    def parse_player_stats(self) -> list:
-        pass
+    def parse_player_stats(self, key_list, value_list) -> list:
+        out = []
+
+        out += [dict(zip(key_list, value_list[i: i + len(key_list)])) for i in range(0, len(value_list), len(key_list))]
+
+        print(out)
+
+        return out
 
     def clean_player_stats(self, player_data_frame) -> None:
         pass
 
 
-stats = PlayerPerGameStats("wembavi")
+stats = PlayerPerGameStats("lillada01")
 stats()
+
+#31 rows, one optional if awards in season

@@ -1,5 +1,5 @@
 import csv
-from data.data import player_last_five_fields
+from data.data import player_last_five_fields, player_per_game_fields
 
 def parse_player_formatted_name(last_name, first_name):
     last = last_name[:5]
@@ -30,4 +30,10 @@ def player_last_five_to_csv(rows, output_file_path, output_write_option):
             rows
         )
 
-parse_player_formatted_name("Harden", "James")
+def player_per_game_to_csv(rows, output_file_path, output_write_option):
+    with open(output_file_path, output_write_option, newline = "") as f:
+        writer = csv.DictWriter(f, fieldnames = player_per_game_fields)
+        writer.writeheader()
+        writer.writerows(
+            rows
+        )

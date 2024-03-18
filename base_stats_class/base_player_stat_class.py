@@ -24,7 +24,7 @@ class BaseStatsClass(ABC):
         pass
 
     @abstractmethod
-    def parse_player_stats(self) -> list:
+    def parse_player_stats(self, key_list, value_list) -> list:
         pass
 
 """
@@ -47,7 +47,7 @@ class BasePlayerStats(ABC):
         pass
 
     @abstractmethod
-    def parse_player_stats(self) -> list:
+    def parse_player_stats(self, key_list, value_list) -> list:
         pass
 
     @abstractmethod
