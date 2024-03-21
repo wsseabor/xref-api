@@ -31,3 +31,15 @@ player_last_five_fields = [
     'GmSc', 
     '+/-'
     ]
+
+player_per_game_fields = [
+    'Season',
+    'Age',
+    'Team',
+    'League',
+    'Position',
+    'Games',
+    'Games Started',
+    'Minutes Played',
+    ''
+]
