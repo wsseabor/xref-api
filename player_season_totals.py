@@ -35,7 +35,7 @@ class PlayerSeasonTotalStats(BasePlayerStats):
         try:
             table = self.browser.find_element(By.ID, 'totals')
             headers = table.find_elements(By.XPATH, './thead/tr')
-            column_headers = [header.text for header in headers[0].find_elements(By.TAG_NAME, 'th')]
+            column_headers = [header.text for header in headers[0].find_elements(By.XPATH, './th[not(contains(@data-stat, "DUMMY"))]')]
 
             print(column_headers)
 
@@ -48,7 +48,9 @@ class PlayerSeasonTotalStats(BasePlayerStats):
         try:
             table = self.browser.find_element(By.ID, 'totals')
             rows = table.find_elements(By.XPATH, './tbody')
-            player_data = [row.text for row in rows[0].find_elements(By.XPATH, './tr')]
+            stat_rows = [row.text for row in rows[0].find_elements(By.XPATH, './tr')]
+
+            player_data = [y for x in stat_rows for y in x.split(' ')]
 
             print(player_data)
 
@@ -58,7 +60,13 @@ class PlayerSeasonTotalStats(BasePlayerStats):
             self.browser.quit()
 
     def parse_player_stats(self, key_list, value_list) -> list:
-        pass
+        out = []
+
+        out += [dict(zip(key_list, value_list[i: i + len(key_list)])) for i in range(0, len(value_list), len(key_list))]
+
+        print(out)
+
+        return out
 
     def clean_player_stats(self, player_data_frame) -> None:
         pass
