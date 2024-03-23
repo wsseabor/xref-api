@@ -51,5 +51,5 @@ class BasePlayerStats(ABC):
         pass
 
     @abstractmethod
-    def clean_player_stats(self, player_data_frame) -> None:
+    def clean_player_stats(self, player_data_dic) -> None:
         pass

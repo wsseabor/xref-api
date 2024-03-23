@@ -1,11 +1,9 @@
 from base_stats_class.base_player_stat_class import BasePlayerStats
 from selenium import webdriver
-from selenium.common.exceptions import WebDriverException
 from selenium.common.exceptions import TimeoutException
 from selenium.webdriver.common.by import By
-from selenium.webdriver.support import expected_conditions as ec
-from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.chrome.options import Options
+import pandas as pd
 
 class PlayerSeasonTotalStats(BasePlayerStats):
     def __init__(self, player_name):
@@ -29,7 +27,10 @@ class PlayerSeasonTotalStats(BasePlayerStats):
 
         print("Scrape ok...\n")
         print("Parsing data...")
-        self.parse_player_stats(columns, rows)
+        (player_dict := self.parse_player_stats(columns, rows))
+
+        print("Constructing dataframe...")
+        self.clean_player_stats(player_dict)
 
     def get_player_column_headers(self) -> list:
         try:
@@ -37,7 +38,8 @@ class PlayerSeasonTotalStats(BasePlayerStats):
             headers = table.find_elements(By.XPATH, './thead/tr')
             column_headers = [header.text for header in headers[0].find_elements(By.XPATH, './th[not(contains(@data-stat, "DUMMY"))]')]
 
-            print(column_headers)
+            #Test print
+            #print(column_headers)
 
             return column_headers
 
@@ -52,7 +54,8 @@ class PlayerSeasonTotalStats(BasePlayerStats):
 
             player_data = [y for x in stat_rows for y in x.split(' ')]
 
-            print(player_data)
+            #Test print
+            #print(player_data)
 
             return player_data
 
@@ -68,8 +71,13 @@ class PlayerSeasonTotalStats(BasePlayerStats):
 
         return out
 
-    def clean_player_stats(self, player_data_frame) -> None:
-        pass
+    def clean_player_stats(self, player_data_dic) -> None:
+        player_df = pd.DataFrame(data=player_data_dic)
+
+        #Test print
+        #print(player_df.to_string())
+
+        return player_df
 
 stats = PlayerSeasonTotalStats("lillada")
 stats()
