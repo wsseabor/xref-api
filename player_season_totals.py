@@ -5,6 +5,19 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.chrome.options import Options
 import pandas as pd
 
+"""
+Season total stats
+
+Takes player name and uses it to reference basketball reference's player stats page,
+Inits selenium webdriver with options for headless browser and not loading images for faster performance
+
+__call__ method performs like runtime script, aggregating columns and rows of stats table
+and concatenates them to dictionary, then to pandas dataframe
+
+Other helper methods retrieve columns headers and rows, and perform utility functions
+to package data into format that can be output to a json-like format and then to dataframe
+"""
+
 class PlayerSeasonTotalStats(BasePlayerStats):
     def __init__(self, player_name):
         self.player_name = player_name
@@ -33,6 +46,11 @@ class PlayerSeasonTotalStats(BasePlayerStats):
         self.clean_player_stats(player_dict)
 
     def get_player_column_headers(self) -> list:
+
+        """
+        Scrapes page with selenium and xpath methods, returns list of column headers
+        """
+
         try:
             table = self.browser.find_element(By.ID, 'totals')
             headers = table.find_elements(By.XPATH, './thead/tr')
@@ -47,6 +65,10 @@ class PlayerSeasonTotalStats(BasePlayerStats):
             self.browser.quit()
 
     def get_player_row_stats(self) -> list:
+
+        """
+        Scrapes page with selenium and xpath methods, returns list of row stats for each row
+        """
         try:
             table = self.browser.find_element(By.ID, 'totals')
             rows = table.find_elements(By.XPATH, './tbody')
@@ -63,11 +85,23 @@ class PlayerSeasonTotalStats(BasePlayerStats):
             self.browser.quit()
 
     def parse_player_stats(self, key_list, value_list) -> list:
+
+        """
+        Parses both column headers and row values, packages them into list of dictionaries for each row
+
+        Init empty list
+
+        Append empty list as dictionary, zip the key_list (column headers), and value_list(rows), slices row
+        list from zero to the length of the header list, for each value in range (0, start: length of row, step: length of 
+        column headers)       
+        """
+
         out = []
 
         out += [dict(zip(key_list, value_list[i: i + len(key_list)])) for i in range(0, len(value_list), len(key_list))]
 
-        print(out)
+        #Test print
+        #print(out)
 
         return out
 
