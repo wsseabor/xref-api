@@ -54,7 +54,7 @@ class PlayerPerGameStats(BasePlayerStats):
         try:
             table = self.browser.find_element(By.ID, 'per_game')
             headers = table.find_elements(By.XPATH, './thead/tr')
-            column_headers = [header.text for header in headers[0].find_elements(By.TAG_NAME, 'th')]
+            column_headers = [header.text for header in headers[0].find_elements(By.XPATH, './th[not(contains(@data-stat, "award_summary"))]')]
 
         except TimeoutException:
             self.browser.quit()
@@ -73,7 +73,7 @@ class PlayerPerGameStats(BasePlayerStats):
         TO DO:
             Exclude player awards in given season - selenium xpath scraping includes column data with 
             awards but skips columns without - leaving no blank string for an empty column, making
-            zipping in dictionary difficult
+            zipping in dictionary
 
         try:
             table = self.browser.find_element(By.ID, 'per_game')
@@ -93,7 +93,7 @@ class PlayerPerGameStats(BasePlayerStats):
         try:
             table = self.browser.find_element(By.ID, 'per_game')
             rows = table.find_elements(By.XPATH, './tbody')
-            stat_rows = [row.text for row in rows[0].find_elements(By.XPATH, './th and ./td[not[data-stat = "award_summary"]]')]
+            stat_rows = [row.text for row in rows[0].find_elements(By.XPATH, './tr[not(contains(@data-stat, "award_summary"))]')]
 
             #List split to get each stat as it's own index
             player_data = [y for x in stat_rows for y in x.split(' ')]
@@ -121,5 +121,3 @@ class PlayerPerGameStats(BasePlayerStats):
 
 stats = PlayerPerGameStats("lillada")
 stats()
-
-#31 rows, one optional if awards in season
