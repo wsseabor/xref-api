@@ -41,5 +41,26 @@ player_per_game_fields = [
     'Games',
     'Games Started',
     'Minutes Played',
-    ''
+    'Field Goals'
+    'Field Goal Attempts'
+    'Field Goal Percentage'
+    'Three Point Field Goals'
+    'Three Point Attempts'
+    'Three Point Percentage'
+    'Two Point Field Goals'
+    'Two Point Attempts'
+    'Two Point Percentage'
+    'Effective Field Goal Percentage'
+    'Free Throws'
+    'Free Throw Attempts'
+    'Free Throw Percentage'
+    'Offensive Rebounds'
+    'Defensive Rebounds'
+    'Total Rebounds'
+    'Assists'
+    'Steals'
+    'Blocks'
+    'Turnovers'
+    'Personal Fouls'
+    'Points' 
 ]
