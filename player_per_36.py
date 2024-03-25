@@ -6,7 +6,7 @@ from selenium.webdriver.chrome.options import Options
 import pandas as pd
 
 """
-Season total stats
+Player per 36 minutes total stats
 
 Takes player name and uses it to reference basketball reference's player stats page,
 Inits selenium webdriver with options for headless browser and not loading images for faster performance
@@ -18,7 +18,7 @@ Other helper methods retrieve columns headers and rows, and perform utility func
 to package data into format that can be output to a json-like format and then to dataframe
 """
 
-class PlayerSeasonTotalStats(BasePlayerStats):
+class PlayerPer36Minutes(BasePlayerStats):
     def __init__(self, player_name):
         self.player_name = player_name
         self.options = Options()
@@ -46,15 +46,14 @@ class PlayerSeasonTotalStats(BasePlayerStats):
         self.clean_player_stats(player_dict)
 
     def get_player_column_headers(self) -> list:
-
         """
         Scrapes page with selenium and xpath methods, returns list of column headers
         """
 
         try:
-            table = self.browser.find_element(By.ID, 'totals')
+            table = self.browser.find_element(By.ID, 'per_minute')
             headers = table.find_elements(By.XPATH, './thead/tr')
-            column_headers = [header.text for header in headers[0].find_elements(By.XPATH, './th[not(contains(@data-stat, "DUMMY"))]')]
+            column_headers = [header.text for header in headers[0].find_elements(By.XPATH, './th')]
 
             #Test print
             #print(column_headers)
@@ -63,29 +62,26 @@ class PlayerSeasonTotalStats(BasePlayerStats):
 
         except TimeoutException:
             self.browser.quit()
-
+    
     def get_player_row_stats(self) -> list:
-
         """
         Scrapes page with selenium and xpath methods, returns list of row stats for each row
         """
         try:
-            table = self.browser.find_element(By.ID, 'totals')
+            table = self.browser.find_element(By.ID, 'per_minute')
             rows = table.find_elements(By.XPATH, './tbody')
             stat_rows = [row.text for row in rows[0].find_elements(By.XPATH, './tr')]
 
             player_data = [y for x in stat_rows for y in x.split(' ')]
 
-            #Test print
             #print(player_data)
 
             return player_data
 
         except TimeoutException:
             self.browser.quit()
-
+    
     def parse_player_stats(self, key_list, value_list) -> list:
-
         """
         Parses both column headers and row values, packages them into list of dictionaries for each row
 
@@ -104,7 +100,7 @@ class PlayerSeasonTotalStats(BasePlayerStats):
         #print(out)
 
         return out
-
+    
     def clean_player_stats(self, player_data_dic) -> None:
         player_df = pd.DataFrame(data=player_data_dic)
 
@@ -112,6 +108,6 @@ class PlayerSeasonTotalStats(BasePlayerStats):
         #print(player_df.to_string())
 
         return player_df
-
-stats = PlayerSeasonTotalStats("lillada")
+    
+stats = PlayerPer36Minutes("lillada")
 stats()
