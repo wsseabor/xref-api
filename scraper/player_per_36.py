@@ -109,5 +109,5 @@ class PlayerPer36Minutes(BasePlayerStats):
 
         return player_df
     
-stats = PlayerPer36Minutes("lillada")
-stats()
+#stats = PlayerPer36Minutes("lillada")
+#stats()

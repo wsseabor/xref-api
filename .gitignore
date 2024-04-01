@@ -10,3 +10,4 @@ dist/
 *.csv
 test.py
 notes.py
+experiment1.py
