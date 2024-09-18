@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 
 """
-Structured base class for an NBA player's stat profils on their home page 
+Structured base class for an NBA player's stat profiles on their home page 
 (eg. https://www.basketball-reference.com/players/w/wembavi01.html)
 
 Abstract class to scrape and parse player data, with selenium as basketball reference
