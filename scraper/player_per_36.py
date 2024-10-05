@@ -1,6 +1,7 @@
-from base_stats_class.base_player_stat_class import BasePlayerStats
+#from base_stats_class.base_player_stat_class import BasePlayerStats
 from selenium import webdriver
 from selenium.common.exceptions import TimeoutException
+from selenium.common.exceptions import SessionNotCreatedException
 from selenium.webdriver.common.by import By
 from selenium.webdriver.chrome.options import Options
 import pandas as pd
@@ -18,7 +19,7 @@ Other helper methods retrieve columns headers and rows, and perform utility func
 to package data into format that can be output to a json-like format and then to dataframe
 """
 
-class PlayerPer36Minutes(BasePlayerStats):
+class PlayerPer36Minutes():
     def __init__(self, player_name):
         self.player_name = player_name
         self.options = Options()
@@ -32,18 +33,23 @@ class PlayerPer36Minutes(BasePlayerStats):
         self.browser.get(f"https://www.basketball-reference.com/players/{self.player_name[0]}/{self.player_name}01.html")
 
     def __call__(self):
-        print("Scraping per game column data...")
-        (columns := self.get_player_column_headers())
+        try:
+            print("Scraping per game column data...")
+            (columns := self.get_player_column_headers())
 
-        print("Scraping per game row data...")
-        (rows := self.get_player_row_stats())
+            print("Scraping per game row data...")
+            (rows := self.get_player_row_stats())
 
-        print("Scrape ok...")
-        print("Parsing data...")
-        (player_dict := self.parse_player_stats(columns, rows))
+            print("Scrape ok...")
+            print("Parsing data...")
+            (player_dict := self.parse_player_stats(columns, rows))
 
-        print("Constructing dataframe...")
-        self.clean_player_stats(player_dict)
+            print("Constructing dataframe...")
+            self.clean_player_stats(player_dict)
+
+        except SessionNotCreatedException:
+            print("Session not created, ChromeDriver not supported with current browser version.")
+            self.browser.quit()
 
     def get_player_column_headers(self) -> list:
         """
@@ -109,5 +115,5 @@ class PlayerPer36Minutes(BasePlayerStats):
 
         return player_df
     
-#stats = PlayerPer36Minutes("lillada")
-#stats()
+stats = PlayerPer36Minutes("lillada")
+stats()

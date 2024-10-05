@@ -113,5 +113,5 @@ class PlayerSeasonTotalStats(BasePlayerStats):
 
         return player_df
 
-stats = PlayerSeasonTotalStats("lillada")
-stats()
+#stats = PlayerSeasonTotalStats("lillada")
+#stats()

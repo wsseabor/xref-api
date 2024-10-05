@@ -1,4 +1,4 @@
-# Basketball reference API
+Basketball reference API
 
 A basketball reference webscraper factored out of an earlier repo. Integrate with
 command line before shutteling back into the intial repo.
@@ -14,3 +14,15 @@ Sample image is Damian Lillard's full season stats from rookie 2012 season to th
 used for many other current season or past season stats.
 
 ![Dataframe image](/img/67813C0A-6A95-4D52-8F11-1CFF6D5C3764.jpeg)
+
+
+TODO:
+
+    Include try/catch with error logging for SessionNotCreatedException, TimeoutException in individual
+    calls to each class that handles scraping (app/scrapers)
+
+    Flesh out utils.py, include CSV, Pandas DateFrame and JSON returns
+
+    Error logging? 
+
+    Circular dependency issue

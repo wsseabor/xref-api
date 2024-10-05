@@ -119,5 +119,5 @@ class PlayerPerGameStats(BasePlayerStats):
         pass
 
 
-stats = PlayerPerGameStats("lillada")
-stats()
+#stats = PlayerPerGameStats("lillada")
+#stats()
