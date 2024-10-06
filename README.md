@@ -20,6 +20,7 @@ TODO:
 
     Include try/catch with error logging for SessionNotCreatedException, TimeoutException in individual
     calls to each class that handles scraping (app/scrapers)
+        -Brew update chromedriver
 
     Flesh out utils.py, include CSV, Pandas DateFrame and JSON returns
 

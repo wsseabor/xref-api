@@ -9,5 +9,5 @@ redis*/
 dist/
 *.csv
 test.py
-notes.py
+notes.md
 experiment1.py

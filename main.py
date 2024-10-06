@@ -10,4 +10,7 @@ if __name__ == "__main__":
     per_36 = PlayerPer36Minutes(query_string)
     per_36()
 
+    per_game = PlayerPerGameStats(query_string)
+    per_season = PlayerSeasonTotalStats(query_string)
+
    
