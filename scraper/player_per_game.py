@@ -1,16 +1,14 @@
-from base_stats_class.base_player_stat_class import BasePlayerStats
+#from base_stats_class.base_player_stat_class import BasePlayerStats
 from selenium import webdriver
-from selenium.common.exceptions import WebDriverException
 from selenium.common.exceptions import TimeoutException
 from selenium.webdriver.common.by import By
-from selenium.webdriver.support import expected_conditions as ec
-from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.chrome.options import Options
+import pandas as pd
 
 """
 Inherits from base player stat class
 """
-class PlayerPerGameStats(BasePlayerStats):
+class PlayerPerGameStats():
     
     def __init__(self, player_name):
         self.player_name = player_name
@@ -36,7 +34,10 @@ class PlayerPerGameStats(BasePlayerStats):
 
         print("Scrape ok...\n")
         print("Parsing data...")
-        self.parse_player_stats(columns, rows)
+        (player_dict := self.parse_player_stats(columns, rows))
+
+        print("Constructing dataframe...")
+        self.clean_player_stats(player_dict)
 
     """
     Returns list of column headers in specified table
@@ -44,11 +45,7 @@ class PlayerPerGameStats(BasePlayerStats):
     def get_player_column_headers(self) -> list:
 
         """
-        Selenium webdriver boilerplate
-
-        Has to use headless mode to work
-
-        Experimental options - do not load images
+        Scrapes pages with selenium and xpath methods, returns list of column headers
         """
 
         try:
@@ -59,7 +56,6 @@ class PlayerPerGameStats(BasePlayerStats):
         except TimeoutException:
             self.browser.quit()
 
-        print(column_headers)
 
         return column_headers
     
@@ -115,9 +111,12 @@ class PlayerPerGameStats(BasePlayerStats):
 
         return out
 
-    def clean_player_stats(self, player_data_frame) -> None:
-        pass
+    def clean_player_stats(self, player_data_dic) -> pd.DataFrame:
+        player_df = pd.DataFrame(data = player_data_dic)
+        
 
+        #print(player_df.to_string())
+        return player_df
 
-#stats = PlayerPerGameStats("lillada")
-#stats()
+stats = PlayerPerGameStats("lillada")
+stats()

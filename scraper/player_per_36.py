@@ -47,11 +47,13 @@ class PlayerPer36Minutes():
             print("Constructing dataframe...")
             self.clean_player_stats(player_dict)
 
-        except SessionNotCreatedException:
-            print("Session not created, ChromeDriver not supported with current browser version.")
+
+        #Multiple exception block, must be tuple
+        except (SessionNotCreatedException, TimeoutException) as e:
+            print("Selenium error: ", e)
             self.browser.quit()
 
-    def get_player_column_headers(self) -> list:
+    def get_player_column_headers(self) -> list[str]:
         """
         Scrapes page with selenium and xpath methods, returns list of column headers
         """
@@ -69,14 +71,14 @@ class PlayerPer36Minutes():
         except TimeoutException:
             self.browser.quit()
     
-    def get_player_row_stats(self) -> list:
+    def get_player_row_stats(self) -> list[str]:
         """
         Scrapes page with selenium and xpath methods, returns list of row stats for each row
         """
         try:
             table = self.browser.find_element(By.ID, 'per_minute')
             rows = table.find_elements(By.XPATH, './tbody')
-            stat_rows = [row.text for row in rows[0].find_elements(By.XPATH, './tr')]
+            stat_rows = [row.text for row in rows[0].find_elements(By.XPATH, './tr[not(contains(@data-stat, "award_summary"))]')]
 
             player_data = [y for x in stat_rows for y in x.split(' ')]
 
@@ -103,11 +105,11 @@ class PlayerPer36Minutes():
         out += [dict(zip(key_list, value_list[i: i + len(key_list)])) for i in range(0, len(value_list), len(key_list))]
 
         #Test print
-        #print(out)
+        print(out)
 
         return out
     
-    def clean_player_stats(self, player_data_dic) -> None:
+    def clean_player_stats(self, player_data_dic) -> pd.DataFrame:
         player_df = pd.DataFrame(data=player_data_dic)
 
         #Test print
