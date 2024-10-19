@@ -64,7 +64,7 @@ class PlayerPer36Minutes():
             column_headers = [header.text for header in headers[0].find_elements(By.XPATH, './th')]
 
             #Test print
-            #print(column_headers)
+            print(column_headers)
 
             return column_headers
 
@@ -78,11 +78,11 @@ class PlayerPer36Minutes():
         try:
             table = self.browser.find_element(By.ID, 'per_minute')
             rows = table.find_elements(By.XPATH, './tbody')
-            stat_rows = [row.text for row in rows[0].find_elements(By.XPATH, './tr[not(contains(@data-stat, "award_summary"))]')]
+            stat_rows = [row.text for row in rows[0].find_elements(By.XPATH, './tr')]
 
             player_data = [y for x in stat_rows for y in x.split(' ')]
 
-            #print(player_data)
+            print(player_data)
 
             return player_data
 
