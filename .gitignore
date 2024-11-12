@@ -11,3 +11,5 @@ dist/
 test.py
 notes.md
 experiment1.py
+exp.py
+player_per_game.py

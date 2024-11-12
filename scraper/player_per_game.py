@@ -49,47 +49,23 @@ class PlayerPerGameStats():
         """
 
         try:
-            table = self.browser.find_element(By.ID, 'per_game')
+            table = self.browser.find_element(By.ID, 'per_game_stats')
             headers = table.find_elements(By.XPATH, './thead/tr')
-            column_headers = [header.text for header in headers[0].find_elements(By.XPATH, './th[not(contains(@data-stat, "award_summary"))]')]
+            column_headers = [header.text for header in headers[0].find_elements(By.XPATH, './th[position() != last()]')]
 
         except TimeoutException:
             self.browser.quit()
 
+        print(column_headers)
 
         return column_headers
     
     def get_player_row_stats(self) -> list:
 
-        """
-        Selenium webdriver boilerplate
-
-        OLD:
-
-        TO DO:
-            Exclude player awards in given season - selenium xpath scraping includes column data with 
-            awards but skips columns without - leaving no blank string for an empty column, making
-            zipping in dictionary
-
         try:
-            table = self.browser.find_element(By.ID, 'per_game')
-            rows = table.find_elements(By.XPATH, './tbody/tr')
-
-            #31 rows in player per game data, needed to parse list to zip to list of dicts
-            player_data = [row.text for row in rows][:31]
-
-            return player_data
-
-        except TimeoutException:
-            self.browser.quit()
-
-
-        """
-
-        try:
-            table = self.browser.find_element(By.ID, 'per_game')
+            table = self.browser.find_element(By.ID, 'per_game_stats')
             rows = table.find_elements(By.XPATH, './tbody')
-            stat_rows = [row.text for row in rows[0].find_elements(By.XPATH, './tr[not(contains(@data-stat, "award_summary"))]')]
+            stat_rows = [row.text for row in rows[0].find_elements(By.XPATH, './tr[position() != last()]')]
 
             #List split to get each stat as it's own index
             player_data = [y for x in stat_rows for y in x.split(' ')]
@@ -107,7 +83,7 @@ class PlayerPerGameStats():
 
         out += [dict(zip(key_list, value_list[i: i + len(key_list)])) for i in range(0, len(value_list), len(key_list))]
 
-        print(out)
+        #print(out)
 
         return out
 
@@ -115,8 +91,14 @@ class PlayerPerGameStats():
         player_df = pd.DataFrame(data = player_data_dic)
         
 
-        #print(player_df.to_string())
+        print(player_df.to_string())
         return player_df
 
 stats = PlayerPerGameStats("lillada")
 stats()
+
+"""
+Return pandas dataframe first, scrub awards off, return new dataframe, output to json and dict
+
+return later to find best way to strip award text from final column
+"""
