@@ -59,7 +59,7 @@ class PlayerPer36Minutes():
         """
 
         try:
-            table = self.browser.find_element(By.ID, 'per_minute')
+            table = self.browser.find_element(By.ID, 'per_minute_stats')
             headers = table.find_elements(By.XPATH, './thead/tr')
             column_headers = [header.text for header in headers[0].find_elements(By.XPATH, './th')]
 
@@ -76,7 +76,7 @@ class PlayerPer36Minutes():
         Scrapes page with selenium and xpath methods, returns list of row stats for each row
         """
         try:
-            table = self.browser.find_element(By.ID, 'per_minute')
+            table = self.browser.find_element(By.ID, 'per_minute_stats')
             rows = table.find_elements(By.XPATH, './tbody')
             stat_rows = [row.text for row in rows[0].find_elements(By.XPATH, './tr')]
 
