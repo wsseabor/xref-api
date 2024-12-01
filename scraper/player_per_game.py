@@ -58,7 +58,7 @@ class PlayerPerGameStats():
             print("Parsing data...")
             (player_dict := self.parse_player_stats(columns, rows))
             if not player_dict:
-                print("Player dicitonary not constructed. Exiting.")
+                print("Player stats dicitonary not constructed. Exiting.")
                 return None
 
             print("Constructing dataframe...")
@@ -111,26 +111,41 @@ class PlayerPerGameStats():
         
 
     """
-    Parses data and packs into dictionary
+    Parses data and packs into list of dictionaries
+
+        Key : Season
+        Items : Stat rows
+
+    Added exception handling
     """
     def parse_player_stats(self, key_list, value_list) -> list:
-        out = []
+        try:
+            out = []
 
-        out += [dict(zip(key_list, value_list[i: i + len(key_list)])) for i in range(0, len(value_list), len(key_list))]
+            out += [dict(zip(key_list, value_list[i: i + len(key_list)])) for i in range(0, len(value_list), len(key_list))]
 
-        #print(out)
+            #print(out)
 
-        return out
+            return out
+
+        except Exception as e:
+            print(f"Error packing dictionary: {e}")
+            return None
     
     """
     Returns a pandas dataframe from above dictionary packing method
     """
     def player_dataframe(self, player_data_dic) -> pd.DataFrame:
-        player_df = pd.DataFrame(data = player_data_dic)
-        
+        try:
+            player_df = pd.DataFrame(data=player_data_dic)
 
-        print(player_df.to_string())
-        return player_df
+            #print(player_df.to_string())
+
+            return player_df
+
+        except Exception as e:
+            print(f"Error constructing dataframe: {e}")
+            return None
 
 stats = PlayerPerGameStats("lillada")
 stats()
