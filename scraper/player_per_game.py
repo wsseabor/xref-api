@@ -3,7 +3,7 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
-from selenium.common.exceptions import NoSuchElementException, TimeoutException
+from selenium.common.exceptions import NoSuchElementException
 import pandas as pd
 
 """
@@ -82,11 +82,11 @@ class PlayerPerGameStats():
 
         except NoSuchElementException:
             print(f"Could not find player {self.player_name}")
-            return []
+            return None
 
         except Exception as e:
             print(f"Exception: Error occurred: {e}")
-            return []
+            return None
     
 
     """
@@ -101,13 +101,13 @@ class PlayerPerGameStats():
             #List split to get each stat as it's own index
             player_data = [y for x in stat_rows for y in x.split(' ')]
 
-            print(player_data)
+            #print(player_data)
 
             return player_data
 
         except Exception as e:
             print(f"Error extracting row stats: {e}")
-            return []
+            return None
         
 
     """
@@ -135,9 +135,9 @@ class PlayerPerGameStats():
     """
     Returns a pandas dataframe from above dictionary packing method
     """
-    def player_dataframe(self, player_data_dic) -> pd.DataFrame:
+    def player_dataframe(self, player_data_dict) -> pd.DataFrame:
         try:
-            player_df = pd.DataFrame(data=player_data_dic)
+            player_df = pd.DataFrame(data=player_data_dict)
 
             #print(player_df.to_string())
 

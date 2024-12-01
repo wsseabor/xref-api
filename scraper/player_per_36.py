@@ -124,9 +124,9 @@ class PlayerPer36Minutes():
     """
     Returns a pandas dataframe from above dictionary packing method
     """
-    def player_dataframe(self, player_data_dic) -> pd.DataFrame:
+    def player_dataframe(self, player_data_dict) -> pd.DataFrame:
         try:
-            player_df = pd.DataFrame(data=player_data_dic)
+            player_df = pd.DataFrame(data=player_data_dict)
 
             #print(player_df.to_string())
 
