@@ -117,6 +117,14 @@ class PlayerPerGameStats():
         Items : Stat rows
 
     Added exception handling
+
+    Parses both column headers and row values, packages them into list of dictionaries for each row
+
+    Init empty list
+
+    Append empty list as dictionary, zip the key_list (column headers), and value_list(rows), slices row
+    list from zero to the length of the header list, for each value in range (0, start: length of row, step: length of 
+    column headers)       
     """
     def parse_player_stats(self, key_list, value_list) -> list:
         try:

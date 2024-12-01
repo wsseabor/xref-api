@@ -1,24 +1,15 @@
-from base_stats_class.base_player_stat_class import BasePlayerStats
 from selenium import webdriver
-from selenium.common.exceptions import TimeoutException
 from selenium.webdriver.common.by import By
 from selenium.webdriver.chrome.options import Options
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.common.exceptions import NoSuchElementException
 import pandas as pd
 
 """
-Season total stats
-
-Takes player name and uses it to reference basketball reference's player stats page,
-Inits selenium webdriver with options for headless browser and not loading images for faster performance
-
-__call__ method performs like runtime script, aggregating columns and rows of stats table
-and concatenates them to dictionary, then to pandas dataframe
-
-Other helper methods retrieve columns headers and rows, and perform utility functions
-to package data into format that can be output to a json-like format and then to dataframe
+Inits player season totals stats class. Initializes all selenium boilerplate
 """
-
-class PlayerSeasonTotalStats(BasePlayerStats):
+class PlayerSeasonTotalStats():
     def __init__(self, player_name):
         self.player_name = player_name
         self.options = Options()
@@ -29,89 +20,118 @@ class PlayerSeasonTotalStats(BasePlayerStats):
             }
         )
         self.browser = webdriver.Chrome(options=self.options)
-        self.browser.get(f"https://www.basketball-reference.com/players/{self.player_name[0]}/{self.player_name}01.html")
+        self.url = f"https://www.basketball-reference.com/players/{self.player_name[0]}/{self.player_name}01.html"
+        self.browser.get(self.url)
+
+        WebDriverWait(self.browser, 10).until(
+            EC.presence_of_element_located((By.ID, 'totals_stats'))
+        )
+        
 
     def __call__(self):
-        print("Scraping per game column data...")
-        (columns := self.get_player_column_headers())
-
-        print("Scraping per game row data...")
-        (rows := self.get_player_row_stats())
-
-        print("Scrape ok...")
-        print("Parsing data...")
-        (player_dict := self.parse_player_stats(columns, rows))
-
-        print("Constructing dataframe...")
-        self.clean_player_stats(player_dict)
-
-    def get_player_column_headers(self) -> list:
-
-        """
-        Scrapes page with selenium and xpath methods, returns list of column headers
-        """
-
         try:
-            table = self.browser.find_element(By.ID, 'totals')
-            headers = table.find_elements(By.XPATH, './thead/tr')
-            column_headers = [header.text for header in headers[0].find_elements(By.XPATH, './th[not(contains(@data-stat, "DUMMY"))]')]
+            print("Scraping per game column data...")
+            (columns := self.get_player_column_headers())
+            if not columns:
+                print("No columns found. Exiting.")
+                return None
 
-            #Test print
+            print("Scraping per game row data...")
+            (rows := self.get_player_row_stats())
+            if not rows:
+                print("No rows found. Exiting.")
+                return None
+
+            print("Scrape ok...\n")
+            print("Parsing data...")
+            (player_dict := self.parse_player_stats(columns, rows))
+            if not player_dict:
+                print("Player stats dicitonary not constructed. Exiting.")
+                return None
+
+            print("Constructing dataframe...")
+            self.player_dataframe(player_dict)
+        
+        finally:
+            self.browser.quit()
+
+    """
+    Returns list of column headers in specified table
+
+    Added exception handling
+    """
+    def get_player_column_headers(self) -> list:
+        try:
+            table = self.browser.find_element(By.ID, 'totals_stats')
+            headers = table.find_elements(By.XPATH, './thead/tr')
+            column_headers = [header.text for header in headers[0].find_elements(By.XPATH, './th[not(contains(@data-stat, "awards"))]')]
             #print(column_headers)
 
             return column_headers
 
-        except TimeoutException:
-            self.browser.quit()
+        except NoSuchElementException:
+            print(f"Could not find player {self.player_name}")
+            return None
 
+        except Exception as e:
+            print(f"Exception: Error occurred: {e}")
+            return None
+
+    """
+    Returns list of row data for each column
+    """
     def get_player_row_stats(self) -> list:
-
-        """
-        Scrapes page with selenium and xpath methods, returns list of row stats for each row
-        """
         try:
-            table = self.browser.find_element(By.ID, 'totals')
+            table = self.browser.find_element(By.ID, 'totals_stats')
             rows = table.find_elements(By.XPATH, './tbody')
-            stat_rows = [row.text for row in rows[0].find_elements(By.XPATH, './tr')]
+            stat_rows = [row.text for row in rows[0].find_elements(By.XPATH, './tr[not(contains(@data-stat, "awards"))]')]
 
             player_data = [y for x in stat_rows for y in x.split(' ')]
 
-            #Test print
             #print(player_data)
 
             return player_data
 
-        except TimeoutException:
-            self.browser.quit()
+        except Exception as e:
+            print(f"Error extracting row stats: {e}")
+            return None
 
+    """
+    Parses data and packs into list of dictionaries
+
+        Key : Season
+        Items : Stat rows
+
+    Added exception handling
+    """
     def parse_player_stats(self, key_list, value_list) -> list:
+        try:
+            out = []
 
-        """
-        Parses both column headers and row values, packages them into list of dictionaries for each row
+            out += [dict(zip(key_list, value_list[i: i + len(key_list)])) for i in range(0, len(value_list), len(key_list))]
 
-        Init empty list
+            #print(out)
 
-        Append empty list as dictionary, zip the key_list (column headers), and value_list(rows), slices row
-        list from zero to the length of the header list, for each value in range (0, start: length of row, step: length of 
-        column headers)       
-        """
+            return out
 
-        out = []
+        except Exception as e:
+            print(f"Error packing dictionary: {e}")
+            return None
 
-        out += [dict(zip(key_list, value_list[i: i + len(key_list)])) for i in range(0, len(value_list), len(key_list))]
+    """
+    Returns a pandas dataframe from above dictionary packing method
+    """
+    def player_dataframe(self, player_data_dict) -> None:
+        try:
+            player_df = pd.DataFrame(data=player_data_dict)
 
-        #Test print
-        #print(out)
+            #print(player_df.to_string())
 
-        return out
+            return player_df
 
-    def clean_player_stats(self, player_data_dic) -> None:
-        player_df = pd.DataFrame(data=player_data_dic)
+        except Exception as e:
+            print(f"Error constructing dataframe: {e}")
+            return None
 
-        #Test print
-        #print(player_df.to_string())
-
-        return player_df
-
-#stats = PlayerSeasonTotalStats("lillada")
-#stats()
+stats = PlayerSeasonTotalStats("lillada")
+stats()
