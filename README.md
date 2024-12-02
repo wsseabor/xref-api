@@ -1,7 +1,8 @@
 Basketball reference API
 
 A basketball reference webscraper factored out of an earlier repo. Integrate with
-command line before shutteling back into the intial repo.
+command line before shutteling back into the intial repo. Notes.md contains working log of all current tasks,
+use at your own risk.
 
 Many web scrapers for basketball reference are either outdated (7+ years!) or are not compatible with 
 basketball reference as many stat lines they provide whether for teams or players are generated dynamically, 
