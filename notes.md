@@ -1,9 +1,9 @@
 TODO:
 
-    <s> Include try/catch with error logging for SessionNotCreatedException, TimeoutException in individual
-    calls to each class that handles scraping (app/scrapers) </s>
+    <strike>Include try/catch with error logging for SessionNotCreatedException, TimeoutException in individual
+    calls to each class that handles scraping (app/scrapers)</strike>
 
-    <s> Circular dependency issue </s>
+    <strike>Circular dependency issue</strike>
 
     Finish classes for all separate stats tables
 
