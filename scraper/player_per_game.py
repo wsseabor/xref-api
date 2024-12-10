@@ -5,6 +5,7 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.common.exceptions import NoSuchElementException
 import pandas as pd
+import itertools
 
 """
 Inits player per game stats class. Initializes all selenium boilerplate
@@ -77,7 +78,7 @@ class PlayerPerGameStats():
             table = self.browser.find_element(By.ID, 'per_game_stats')
             headers = table.find_elements(By.XPATH, './thead/tr')
             column_headers = [header.text for header in headers[0].find_elements(By.XPATH, './th[position() < last()]')]
-            #print(column_headers)
+
             return column_headers
 
         except NoSuchElementException:
@@ -94,22 +95,18 @@ class PlayerPerGameStats():
     """
     def get_player_row_stats(self) -> list:
         try:
-            table = self.browser.find_element(By.ID, 'per_game_stats')
-            rows = table.find_elements(By.XPATH, './tbody')
-            stat_rows = [row.text for row in rows[0].find_elements(By.XPATH, './tr[position() < last()]')]
-
-            #List split to get each stat as it's own index
-            player_data = [y for x in stat_rows for y in x.split(' ')]
-
+            wait = WebDriverWait(self.browser, 10)
+            player_data = list(itertools.chain(*[[cell.text for cell in row.find_elements(By.CSS_SELECTOR, "th,td")[:-1]]
+            for row in wait.until(EC.visibility_of_all_elements_located((By.CSS_SELECTOR, "#per_game_stats tbody tr")))]))
+                   
             #print(player_data)
-
+                
             return player_data
 
         except Exception as e:
             print(f"Error extracting row stats: {e}")
             return None
         
-
     """
     Parses data and packs into list of dictionaries
 
