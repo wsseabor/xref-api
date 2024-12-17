@@ -3,7 +3,7 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
-from selenium.common.exceptions import NoSuchElementException, TimeoutException
+from selenium.common.exceptions import NoSuchElementException
 import pandas as pd
 
 """
@@ -38,13 +38,13 @@ class PlayerGameHighs():
     """
     def __call__(self):
         try:
-            print("Scraping per game column data...")
+            print("Scraping game high column data...")
             (columns := self.get_player_column_headers())
             if not columns:
                 print("No columns found. Exiting.")
                 return None
 
-            print("Scraping per game row data...")
+            print("Scraping game high row data...")
             (rows := self.get_player_row_stats())
             if not rows:
                 print("No rows found. Exiting.")
@@ -81,7 +81,7 @@ class PlayerGameHighs():
             """
             headers = table.find_elements(By.XPATH, './thead/tr[not(contains(@class, "over_header"))]')
             column_headers = [header.text for header in headers[0].find_elements(By.XPATH, './th')]
-            print(column_headers)
+
             return column_headers
 
         except NoSuchElementException:
@@ -104,8 +104,6 @@ class PlayerGameHighs():
             #List split to get each stat as it's own index
             player_data = [y for x in stat_rows for y in x.split(' ')]
 
-            print(player_data)
-
             return player_data
 
         except Exception as e:
@@ -118,8 +116,6 @@ class PlayerGameHighs():
 
             out += [dict(zip(key_list, value_list[i: i + len(key_list)])) for i in range(0, len(value_list), len(key_list))]
 
-            print(out)
-
             return out
 
         except Exception as e:
@@ -129,8 +125,6 @@ class PlayerGameHighs():
     def player_dataframe(self, player_data_dict) -> pd.DataFrame:
         try:
             player_df = pd.DataFrame(data=player_data_dict)
-
-            print(player_df.to_string())
 
             return player_df
 

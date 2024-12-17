@@ -3,7 +3,8 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
-from selenium.common.exceptions import NoSuchElementException, TimeoutException
+from selenium.common.exceptions import NoSuchElementException
+import itertools
 import pandas as pd
 
 """
@@ -31,13 +32,13 @@ class PlayerPer36Minutes():
 
     def __call__(self):
         try:
-            print("Scraping per game column data...")
+            print("Scraping per 36 minutes column data...")
             (columns := self.get_player_column_headers())
             if not columns:
                 print("No columns found. Exiting.")
                 return None
 
-            print("Scraping per game row data...")
+            print("Scraping per 36 minutes row data...")
             (rows := self.get_player_row_stats())
             if not rows:
                 print("No rows found. Exiting.")
@@ -66,8 +67,8 @@ class PlayerPer36Minutes():
         try:
             table = self.browser.find_element(By.ID, 'per_minute_stats')
             headers = table.find_elements(By.XPATH, './thead/tr')
-            column_headers = [header.text for header in headers[0].find_elements(By.XPATH, './th')]
-            #print(column_headers)
+            column_headers = [header.text for header in headers[0].find_elements(By.XPATH, './th[position() < last()]')]
+
             return column_headers
         
         except NoSuchElementException:
@@ -85,13 +86,9 @@ class PlayerPer36Minutes():
     """
     def get_player_row_stats(self) -> list[str]:
         try:
-            table = self.browser.find_element(By.ID, 'per_minute_stats')
-            rows = table.find_elements(By.XPATH, './tbody')
-            stat_rows = [row.text for row in rows[0].find_elements(By.XPATH, './tr')]
-
-            player_data = [y for x in stat_rows for y in x.split(' ')]
-
-            print(player_data)
+            wait = WebDriverWait(self.browser, 1)
+            player_data = list(itertools.chain(*[[cell.text for cell in row.find_elements(By.CSS_SELECTOR, "th,td")[:-1]]
+            for row in wait.until(EC.visibility_of_all_elements_located((By.CSS_SELECTOR, "#per_minute_stats tbody tr")))]))
 
             return player_data
 
@@ -113,8 +110,6 @@ class PlayerPer36Minutes():
 
             out += [dict(zip(key_list, value_list[i: i + len(key_list)])) for i in range(0, len(value_list), len(key_list))]
 
-            #print(out)
-
             return out
 
         except Exception as e:
@@ -127,8 +122,6 @@ class PlayerPer36Minutes():
     def player_dataframe(self, player_data_dict) -> pd.DataFrame:
         try:
             player_df = pd.DataFrame(data=player_data_dict)
-
-            #print(player_df.to_string())
 
             return player_df
 

@@ -92,15 +92,18 @@ class PlayerPerGameStats():
 
     """
     Returns list of row data for each column
+
+    There is probably a more rubust way to do it but this is what works for the moment
+
+    For now, packs row data into unified list using itertools lib, waits for all elements to become visible, iterates over reach
+    row with <th> and <td> tags excluding the last with a list slice, and packs separate lists into unified list with itertools.chain
     """
     def get_player_row_stats(self) -> list:
         try:
-            wait = WebDriverWait(self.browser, 10)
+            wait = WebDriverWait(self.browser, 1)
             player_data = list(itertools.chain(*[[cell.text for cell in row.find_elements(By.CSS_SELECTOR, "th,td")[:-1]]
             for row in wait.until(EC.visibility_of_all_elements_located((By.CSS_SELECTOR, "#per_game_stats tbody tr")))]))
-                   
-            #print(player_data)
-                
+
             return player_data
 
         except Exception as e:
@@ -129,8 +132,6 @@ class PlayerPerGameStats():
 
             out += [dict(zip(key_list, value_list[i: i + len(key_list)])) for i in range(0, len(value_list), len(key_list))]
 
-            #print(out)
-
             return out
 
         except Exception as e:
@@ -143,8 +144,6 @@ class PlayerPerGameStats():
     def player_dataframe(self, player_data_dict) -> pd.DataFrame:
         try:
             player_df = pd.DataFrame(data=player_data_dict)
-
-            #print(player_df.to_string())
 
             return player_df
 
